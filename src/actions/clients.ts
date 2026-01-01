@@ -10,6 +10,7 @@ export async function createClient(formData: FormData) {
     const phone = formData.get("phone") as string;
     const billingAddress = formData.get("billingAddress") as string;
     const vatNumber = formData.get("vatNumber") as string;
+    const companyId = formData.get("companyId") as string;
 
     await prisma.client.create({
         data: {
@@ -18,6 +19,7 @@ export async function createClient(formData: FormData) {
             phone,
             billingAddress,
             vatNumber,
+            companyId,
         },
     });
 
@@ -31,6 +33,7 @@ export async function updateClient(id: string, formData: FormData) {
     const phone = formData.get("phone") as string;
     const billingAddress = formData.get("billingAddress") as string;
     const vatNumber = formData.get("vatNumber") as string;
+    const companyId = formData.get("companyId") as string;
 
     await prisma.client.update({
         where: { id },
@@ -40,6 +43,7 @@ export async function updateClient(id: string, formData: FormData) {
             phone,
             billingAddress,
             vatNumber,
+            companyId,
         },
     });
 

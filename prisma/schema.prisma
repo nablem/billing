@@ -17,6 +17,7 @@ model Client {
   billingAddress String?
   phone          String?
   vatNumber      String?
+  companyId      String?
   quotes         Quote[]
   bills          Bill[]
   createdAt      DateTime @default(now())

@@ -55,6 +55,19 @@ export default function ClientForm({ client }: ClientFormProps) {
             </div>
 
             <div className={styles.group}>
+                <label htmlFor="companyId" className={styles.label}>
+                    Company ID
+                </label>
+                <input
+                    type="text"
+                    id="companyId"
+                    name="companyId"
+                    defaultValue={client?.companyId || ""}
+                    className={styles.input}
+                />
+            </div>
+
+            <div className={styles.group}>
                 <label htmlFor="vatNumber" className={styles.label}>
                     VAT Number
                 </label>
