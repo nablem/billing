@@ -203,7 +203,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict }: InvoiceF
                                 required
                             />
                             <SmartTextarea
-                                placeholder={dict.quotes.form.description}
+                                placeholder={dict.quotes.form.description_placeholder}
                                 value={item.description}
                                 onValueChange={(val) => updateItem(index, "description", val)}
                                 className={styles.textarea}
@@ -266,7 +266,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict }: InvoiceF
                     {dict.common.back}
                 </Link>
                 <button type="submit" className={styles.button}>
-                    {isEditing ? dict.quotes.form.submit_update : dict.quotes.form.submit_create}
+                    {isEditing ? dict.invoices.form.submit_update : dict.invoices.form.submit_create}
                 </button>
             </div>
         </form>

@@ -24,7 +24,7 @@ export default async function EditQuotePage({ params }: PageProps) {
     });
 
     const clients = await prisma.client.findMany({
-        orderBy: { name: "asc" },
+        orderBy: { createdAt: "desc" },
         select: { id: true, name: true }
     });
 

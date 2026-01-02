@@ -22,12 +22,12 @@ export default async function EditInvoicePage({ params }: PageProps) {
     });
 
     const clients = await prisma.client.findMany({
-        orderBy: { name: "asc" },
+        orderBy: { createdAt: "desc" },
         select: { id: true, name: true }
     });
 
     const quotes = await prisma.quote.findMany({
-        orderBy: { number: "desc" },
+        orderBy: { createdAt: "desc" },
         select: { id: true, number: true }
     });
 

@@ -61,11 +61,12 @@ export const fr = {
             client: "Client",
             select_client: "Sélectionner Client",
             date: "Date",
-            due_date: "Date d'expiration",
+            due_date: "Valable jusqu'au",
             items_section: "Articles",
             notes_section: "Notes",
             title: "Titre",
-            description: "Détails",
+            description: "Description",
+            description_placeholder: "Détails",
             qty: "Qté",
             price: "Prix",
             add_item: "+ Ajouter Article",
@@ -104,6 +105,8 @@ export const fr = {
         },
         form: {
             due_date: "Date d'échéance",
+            submit_create: "Créer Facture",
+            submit_update: "Mettre à jour",
         }
     },
     settings: {
@@ -192,7 +195,8 @@ export const en: Dictionary = {
             items_section: "Items",
             notes_section: "Notes",
             title: "Title",
-            description: "Details",
+            description: "Description",
+            description_placeholder: "Details",
             qty: "Qty",
             price: "Price",
             add_item: "+ Add Item",
@@ -231,6 +235,8 @@ export const en: Dictionary = {
         },
         form: {
             due_date: "Due Date",
+            submit_create: "Create Invoice",
+            submit_update: "Update Invoice",
         }
     },
     settings: {

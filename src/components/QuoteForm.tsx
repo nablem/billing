@@ -149,7 +149,7 @@ export default function QuoteForm({ clients, quote, dict, convertAction }: Quote
                                 required
                             />
                             <SmartTextarea
-                                placeholder={dict.quotes.form.description}
+                                placeholder={dict.quotes.form.description_placeholder}
                                 value={item.description}
                                 onValueChange={(val) => updateItem(index, "description", val)}
                                 className={styles.textarea}

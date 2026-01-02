@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: Props) {
             total: quote.total.toFixed(2),
             items: quote.items.map(item => ({ ...item, total: item.total.toFixed(2), price: item.price.toFixed(2) })),
         };
-        filename = `Quote-${quote.number}.pdf`;
+        filename = `${quote.number}.pdf`;
     } else {
         const invoice = await prisma.invoice.findUnique({
             where: { id },
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, { params }: Props) {
             total: invoice.total.toFixed(2),
             items: invoice.items.map(item => ({ ...item, total: item.total.toFixed(2), price: item.price.toFixed(2) })),
         };
-        filename = `Invoice-${invoice.number}.pdf`;
+        filename = `${invoice.number}.pdf`;
     }
 
     try {

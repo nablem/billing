@@ -1,4 +1,5 @@
-import { type Quote, type Bill, type Client } from "@prisma/client";
+import { type Quote, type Invoice, type Client } from "@prisma/client";
+import nodemailer from "nodemailer";
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
@@ -9,7 +10,32 @@ export async function sendEmail(
     attachment?: { filename: string; content: Buffer }
 ) {
     if (!BREVO_API_KEY) {
-        console.log("Mock Sending Email:", { to, subject, attachment: attachment?.filename });
+        // Use Maildev via Nodemailer
+        try {
+            const transporter = nodemailer.createTransport({
+                host: "localhost",
+                port: 1025,
+                secure: false, // true for 465, false for other ports
+                ignoreTLS: true // Maildev often doesn't care about TLS
+            });
+
+            await transporter.sendMail({
+                from: `"${process.env.SMTP_FROM_NAME || "Freelance Hub"}" <${process.env.SMTP_FROM_EMAIL || "billing@freelancehub.local"}>`,
+                to: `"${to.name}" <${to.email}>`,
+                subject: subject,
+                html: content,
+                attachments: attachment ? [{
+                    filename: attachment.filename,
+                    content: attachment.content
+                }] : undefined
+            });
+
+            console.log("Email sent via Maildev to:", to.email);
+        } catch (error) {
+            console.error("Failed to send email via Maildev:", error);
+            // Fallback to console log if Maildev fails
+            console.log("Mock Sending Email:", { to, subject, attachment: attachment?.filename });
+        }
         return;
     }
 
