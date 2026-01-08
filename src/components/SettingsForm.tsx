@@ -50,12 +50,15 @@ export default function SettingsForm({ organization, dict, defaultLanguage }: Se
         reader.readAsDataURL(file);
     };
 
+    const [saved, setSaved] = useState(false);
+
     const handleSubmit = async (formData: FormData) => {
         if (logoFile) {
             formData.set("logo", logoFile, "logo.png");
         }
         await updateOrganization(formData);
-        alert(dict.settings.form.saved);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
     };
 
     return (
@@ -112,7 +115,12 @@ export default function SettingsForm({ organization, dict, defaultLanguage }: Se
                     </div>
                     <div className={styles.group}>
                         <label className={styles.label}>{dict.settings.form.language}</label>
-                        <select name="language" defaultValue={organization?.language || defaultLanguage} className={styles.input}>
+                        <select
+                            key={organization?.language}
+                            name="language"
+                            defaultValue={organization?.language || defaultLanguage}
+                            className={styles.input}
+                        >
                             <option value="en">English</option>
                             <option value="fr">Français</option>
                         </select>
@@ -144,8 +152,14 @@ export default function SettingsForm({ organization, dict, defaultLanguage }: Se
                 </div>
             </div>
 
-            <button type="submit" className={styles.button}>
-                {dict.settings.form.submit}
+            <button type="submit" className={styles.button} disabled={saved} style={saved ? { background: '#22c55e' } : {}}>
+                {saved ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                        ✓ {dict.common.saved}
+                    </span>
+                ) : (
+                    dict.settings.form.submit
+                )}
             </button>
 
             <div className={styles.section} style={{ marginTop: "3rem", borderTop: "1px solid #eee", paddingTop: "2rem" }}>

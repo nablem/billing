@@ -60,7 +60,6 @@ export async function updateClient(id: string, formData: FormData) {
     });
 
     revalidatePath("/clients");
-    redirect("/clients");
 }
 
 export async function deleteClient(id: string) {

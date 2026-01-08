@@ -151,7 +151,7 @@ export const fr = {
             phone: "Téléphone",
             website: "Site Web",
             logo: "Logo (redimensionné 240x240)",
-            submit: "Enregistrer",
+            submit: "Mettre à jour",
             saved: "Paramètres enregistrés !"
         }
     }
@@ -211,7 +211,7 @@ export const en: Dictionary = {
             zip: "Zip Code",
             country: "Country",
             submit_create: "Create Client",
-            submit_update: "Update Client",
+            submit_update: "Update",
         },
     },
     quotes: {
@@ -283,7 +283,7 @@ export const en: Dictionary = {
         form: {
             due_date: "Due Date",
             submit_create: "Create Invoice",
-            submit_update: "Update Invoice",
+            submit_update: "Update",
         }
     },
     settings: {
@@ -309,7 +309,7 @@ export const en: Dictionary = {
             phone: "Phone",
             website: "Website",
             logo: "Logo (resized 240x240)",
-            submit: "Save",
+            submit: "Update",
             saved: "Settings saved!"
         }
     }

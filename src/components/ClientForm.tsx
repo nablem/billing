@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { createClient, updateClient } from "@/actions/clients";
 import styles from "./ClientForm.module.css";
 import Link from "next/link";
@@ -24,9 +26,16 @@ interface ClientFormProps {
 export default function ClientForm({ client, dict }: ClientFormProps) {
     const isEditing = !!client;
     const action = isEditing ? updateClient.bind(null, client.id) : createClient;
+    const [saved, setSaved] = useState(false);
+
+    const handleSubmit = async (formData: FormData) => {
+        await action(formData);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
 
     return (
-        <form action={action} className={styles.form}>
+        <form action={handleSubmit} className={styles.form}>
             <div className={styles.group}>
                 <label htmlFor="name" className={styles.label}>
                     {dict.clients.form.name}
@@ -152,8 +161,14 @@ export default function ClientForm({ client, dict }: ClientFormProps) {
                 <Link href="/clients" className={styles.secondaryButton}>
                     {dict.common.back}
                 </Link>
-                <button type="submit" className={styles.button}>
-                    {isEditing ? dict.clients.form.submit_update : dict.clients.form.submit_create}
+                <button type="submit" className={styles.button} disabled={saved} style={saved ? { background: '#22c55e' } : {}}>
+                    {saved ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            ✓ {dict.common.saved}
+                        </span>
+                    ) : (
+                        isEditing ? dict.clients.form.submit_update : dict.clients.form.submit_create
+                    )}
                 </button>
             </div>
         </form>
