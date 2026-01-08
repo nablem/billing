@@ -8,9 +8,10 @@ import { useState, useRef } from "react";
 interface SettingsFormProps {
     organization: any;
     dict: Dictionary;
+    defaultLanguage: "fr" | "en";
 }
 
-export default function SettingsForm({ organization, dict }: SettingsFormProps) {
+export default function SettingsForm({ organization, dict, defaultLanguage }: SettingsFormProps) {
     const [previewUrl, setPreviewUrl] = useState<string | null>(organization?.logoUrl || null);
     const [logoFile, setLogoFile] = useState<Blob | null>(null);
 
@@ -92,9 +93,19 @@ export default function SettingsForm({ organization, dict }: SettingsFormProps) 
                         <label className={styles.label}>{dict.settings.form.zip_code}</label>
                         <input name="zipCode" defaultValue={organization?.zipCode} className={styles.input} />
                     </div>
+                </div>
+
+                <div className={styles.row}>
                     <div className={styles.group}>
                         <label className={styles.label}>{dict.settings.form.country}</label>
                         <input name="country" defaultValue={organization?.country} className={styles.input} />
+                    </div>
+                    <div className={styles.group}>
+                        <label className={styles.label}>{dict.settings.form.language}</label>
+                        <select name="language" defaultValue={organization?.language || defaultLanguage} className={styles.input}>
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                        </select>
                     </div>
                 </div>
 
@@ -153,6 +164,6 @@ export default function SettingsForm({ organization, dict }: SettingsFormProps) 
                     </button>
                 </div>
             </div>
-        </form>
+        </form >
     );
 }

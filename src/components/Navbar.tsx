@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Navbar.module.css";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { Dictionary } from "@/lib/dictionaries";
 
 export default function Navbar({ dict, lang, organization }: { dict: Dictionary; lang: "fr" | "en"; organization: { name: string | null; logoUrl: string | null } | null }) {
@@ -41,7 +40,6 @@ export default function Navbar({ dict, lang, organization }: { dict: Dictionary;
             {link.label}
           </Link>
         ))}
-        <LanguageSwitcher currentLang={lang} />
       </nav>
     </header>
   );

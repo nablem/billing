@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -20,6 +21,7 @@ export async function updateOrganization(formData: FormData) {
     const email = formData.get("email") as string;
     const phone = formData.get("phone") as string;
     const website = formData.get("website") as string;
+    const language = formData.get("language") as string;
 
     // Handle Logo
     const logoFile = formData.get("logo") as File | null;
@@ -56,6 +58,7 @@ export async function updateOrganization(formData: FormData) {
                 email,
                 phone,
                 website,
+                language,
                 ...(logoUrl && { logoUrl }),
             }
         });
@@ -72,9 +75,14 @@ export async function updateOrganization(formData: FormData) {
                 email,
                 phone,
                 website,
+                language: language || "en",
                 logoUrl,
             }
         });
+    }
+
+    if (language) {
+        (await cookies()).set("NEXT_LOCALE", language, { path: "/", maxAge: 60 * 60 * 24 * 365 });
     }
 
     revalidatePath("/settings");
