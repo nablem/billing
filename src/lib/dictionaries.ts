@@ -112,6 +112,13 @@ export const fr = {
             quarterly: "Trimestriel",
             yearly: "Annuel",
         },
+        retainer_invoice: "Facture d'acompte",
+        retainer_percentage: "Pourcentage de l'acompte (%)",
+        retainer_associated_article_title: "Acompte sur devis {number}",
+        validation: {
+            required_field: "Veuillez remplir ce champ",
+            quote_required: "Veuillez sélectionner un devis"
+        },
         mark_as_sent: "Marquer comme Envoyée",
         mark_as_paid: "Marquer comme Payée",
         mark_as_overdue: "Marquer comme En Retard",
@@ -272,6 +279,13 @@ export const en: Dictionary = {
             monthly: "Monthly",
             quarterly: "Quarterly",
             yearly: "Yearly",
+        },
+        retainer_invoice: "Retainer Invoice",
+        retainer_percentage: "Retainer Percentage (%)",
+        retainer_associated_article_title: "Retainer for quote {number}",
+        validation: {
+            required_field: "Please fill this field",
+            quote_required: "Please select a quote"
         },
         status: {
             DRAFT: "Draft",

@@ -20,6 +20,8 @@ export interface InvoiceInput {
     notes?: string;
     isRecurring?: boolean;
     recurringInterval?: string;
+    isRetainer?: boolean;
+    retainerPercentage?: number;
 }
 
 // Helper to parse items from FormData
@@ -61,6 +63,18 @@ export async function createInvoice(formData: FormData) {
     const notes = formData.get("notes") as string;
     const isRecurring = formData.get("isRecurring") === "on";
     const recurringInterval = formData.get("recurringInterval") as string;
+    const isRetainer = formData.get("isRetainer") === "on";
+    const retainerPercentage = parseFloat(formData.get("retainerPercentage") as string || "0");
+
+    console.log("createInvoice args:", { clientId, quoteId, isRetainer, retainerPercentage });
+
+    if (!clientId) {
+        throw new Error("Client ID is required");
+    }
+
+    if (isRetainer && !quoteId) {
+        throw new Error("Quote is required for retainer invoices");
+    }
 
     const items = parseItems(formData);
     const total = items.reduce((acc, item) => acc + (item.quantity * item.price * (1 + (item.vat || 0) / 100)), 0);
@@ -78,6 +92,8 @@ export async function createInvoice(formData: FormData) {
             total,
             isRecurring,
             recurringInterval: isRecurring ? recurringInterval : undefined,
+            isRetainer,
+            retainerPercentage: isRetainer ? retainerPercentage : undefined,
             items: {
                 create: items.map((item) => ({
                     title: item.title,
@@ -104,11 +120,14 @@ export async function updateInvoice(id: string, formData: FormData) {
     const notes = formData.get("notes") as string;
     const isRecurring = formData.get("isRecurring") === "on";
     const recurringInterval = formData.get("recurringInterval") as string;
+    const isRetainer = formData.get("isRetainer") === "on";
+    const retainerPercentage = parseFloat(formData.get("retainerPercentage") as string || "0");
 
     const items = parseItems(formData);
     const total = items.reduce((acc, item) => acc + (item.quantity * item.price * (1 + (item.vat || 0) / 100)), 0);
 
     await prisma.$transaction(async (tx) => {
+
         await tx.invoiceItem.deleteMany({
             where: { invoiceId: id }
         });
@@ -123,6 +142,8 @@ export async function updateInvoice(id: string, formData: FormData) {
                 notes,
                 isRecurring,
                 recurringInterval: isRecurring ? recurringInterval : undefined,
+                isRetainer,
+                retainerPercentage: isRetainer ? retainerPercentage : undefined,
                 total,
                 items: {
                     create: items.map((item) => ({

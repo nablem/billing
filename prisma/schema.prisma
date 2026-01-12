@@ -77,6 +77,10 @@ model Invoice {
   recurringInterval String?   // e.g., "MONTHLY", "YEARLY"
   nextRecurringDate DateTime?
 
+  // Retainer logic
+  isRetainer       Boolean    @default(false)
+  retainerPercentage Float?
+
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }

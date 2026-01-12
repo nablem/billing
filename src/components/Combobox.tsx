@@ -19,6 +19,8 @@ interface ComboboxProps {
     minSearchLength?: number;
     valueKey?: string; // key in result to use as label (name or number)
     allowClear?: boolean;
+    disabled?: boolean;
+    error?: string;
 }
 
 export default function Combobox({
@@ -32,8 +34,9 @@ export default function Combobox({
     minSearchLength = 2,
     valueKey = "name",
     allowClear = false,
-    disabled = false
-}: ComboboxProps & { disabled?: boolean }) {
+    disabled = false,
+    error
+}: ComboboxProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState("");
     const [items, setItems] = useState<Item[]>(initialItems);
@@ -80,7 +83,10 @@ export default function Combobox({
 
     return (
         <div className={styles.wrapper} ref={wrapperRef} style={disabled ? { pointerEvents: 'none' } : {}}>
-            <label className={styles.label}>{label}</label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                <label className={styles.label} style={{ marginBottom: 0 }}>{label}</label>
+                {error && <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.875rem' }}>{error}</span>}
+            </div>
             <input type="hidden" name={name} value={selectedItem?.id || ""} />
 
             <div className={styles.control}>

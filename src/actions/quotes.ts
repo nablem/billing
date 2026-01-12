@@ -152,3 +152,16 @@ export async function updateQuoteStatus(id: string, status: string) {
     revalidatePath("/quotes");
     revalidatePath(`/quotes/${id}`);
 }
+
+export async function getQuoteDetails(id: string) {
+    const quote = await prisma.quote.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            number: true,
+            total: true,
+            currency: true
+        }
+    });
+    return quote;
+}
