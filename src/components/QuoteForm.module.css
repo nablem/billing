@@ -55,7 +55,7 @@
 
 .gridLayout {
     display: grid;
-    grid-template-columns: 2fr 0.5fr 1fr 1fr 32px;
+    grid-template-columns: 4fr 0.5fr 0.75fr 0.75fr 32px;
     gap: 1rem;
     align-items: center;
 }
