@@ -112,7 +112,7 @@ export const fr = {
             quarterly: "Trimestriel",
             yearly: "Annuel",
         },
-        retainer_invoice: "Facture d'acompte",
+        retainer_invoice: "Facture d'Acompte",
         retainer_percentage: "Pourcentage de l'acompte (%)",
         retainer_associated_article_title: "Acompte sur devis {number}",
         validation: {
