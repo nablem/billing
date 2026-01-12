@@ -43,7 +43,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       _sum: { total: true }
     }),
     prisma.invoice.aggregate({
-      where: { status: "SENT", ...whereDate },
+      where: { status: { in: ["SENT", "OVERDUE"] }, ...whereDate },
       _sum: { total: true }
     })
   ]);

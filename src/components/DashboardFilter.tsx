@@ -20,7 +20,7 @@ export default function DashboardFilter({ dict }: Props) {
     const [selectedMonth, setSelectedMonth] = useState(searchParams.get("month") || "");
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if (selectedYear) {
             params.set("year", selectedYear);
         } else {
@@ -33,7 +33,9 @@ export default function DashboardFilter({ dict }: Props) {
             params.delete("month");
         }
 
-        router.push(`?${params.toString()}`);
+        if (params.toString() !== searchParams.toString()) {
+            router.push(`?${params.toString()}`);
+        }
     }, [selectedYear, selectedMonth, router, searchParams]);
 
     return (
