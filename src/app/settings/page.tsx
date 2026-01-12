@@ -7,7 +7,7 @@ export default async function SettingsPage() {
     const organization = await getOrganization();
 
     return (
-        <div>
+        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem" }}>
             <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "2rem" }}>
                 {dict.settings.title}
             </h1>
