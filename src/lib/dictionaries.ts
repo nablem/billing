@@ -135,6 +135,10 @@ export const fr = {
             OVERDUE: "En Retard",
             CANCELLED: "Annulée",
         },
+        type: "Type",
+        type_recurring: "Récurrente",
+        type_retainer: "Acompte",
+        type_balance: "Solde",
         form: {
             due_date: "Date d'échéance",
             submit_create: "Créer Facture",
@@ -304,6 +308,10 @@ export const en: Dictionary = {
             OVERDUE: "Overdue",
             CANCELLED: "Cancelled",
         },
+        type: "Type",
+        type_recurring: "Recurring",
+        type_retainer: "Retainer",
+        type_balance: "Balance",
         form: {
             due_date: "Due Date",
             submit_create: "Create Invoice",

@@ -67,7 +67,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                     <tr>
                         <th>{dict.quotes.number}</th>
                         <th>{dict.quotes.client}</th>
-                        <th>{dict.invoices.recurring}</th>
+                        <th>{dict.invoices.type}</th>
                         <th style={{ textAlign: "right" }}>{dict.common.total}</th>
                         <th style={{ display: "flex", alignItems: "center" }}>
                             {dict.common.status}
@@ -85,7 +85,12 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                                 </Link>
                             </td>
                             <td>{invoice.client.name}</td>
-                            <td style={{ fontSize: '0.8rem' }}>{invoice.isRecurring ? `${(dict.invoices.intervals as any)[invoice.recurringInterval?.toLowerCase() || ''] || invoice.recurringInterval}` : '-'}</td>
+                            <td style={{ fontSize: '0.9rem' }}>
+                                {invoice.isRecurring ? dict.invoices.type_recurring :
+                                    invoice.isRetainer ? dict.invoices.type_retainer :
+                                        invoice.isBalance ? dict.invoices.type_balance :
+                                            '-'}
+                            </td>
                             <td style={{ textAlign: "right" }}>{invoice.total.toFixed(2)} {invoice.currency}</td>
                             <td><span className={`${styles.status} ${styles['status_' + invoice.status]}`}>
                                 {(dict.invoices.status as any)[invoice.status] || invoice.status}
