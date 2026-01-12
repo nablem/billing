@@ -140,6 +140,19 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
         setItems(items.filter((_, i) => i !== index));
     };
 
+    const handleRecurringChange = (checked: boolean) => {
+        setIsRecurring(checked);
+        if (checked) {
+            setIsRetainer(false);
+            // If we're switching from Retainer mode to Recurring, reset items to a default editable item if we're creating a new invoice,
+            // or if the current items look like a generated retainer item (single item, read only context effectively).
+            // Simplest safe approach: If creating new, reset. If editing, keep as is (user might want to keep data).
+            if (!invoice && isRetainer) {
+                setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
+            }
+        }
+    };
+
     const [saved, setSaved] = useState(false);
     const [clientError, setClientError] = useState(false);
     const [quoteError, setQuoteError] = useState(false);
@@ -250,7 +263,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                     id="isRecurring"
                     name="isRecurring"
                     checked={isRecurring}
-                    onChange={(e) => setIsRecurring(e.target.checked)}
+                    onChange={(e) => handleRecurringChange(e.target.checked)}
 
                     style={{ width: 'auto' }}
                     disabled={readOnly}
