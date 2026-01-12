@@ -179,7 +179,9 @@ export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceN
         }
     };
 
-    const handleBalanceChange = (checked: boolean) => {
+    const [recentRetainers, setRecentRetainers] = useState<{ id: string; label: string }[]>([]);
+
+    const handleBalanceChange = async (checked: boolean) => {
         setIsBalance(checked);
         setRetainerDeductionAmount(0);
         setCurrentRetainerNumber(undefined);
@@ -192,6 +194,10 @@ export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceN
                 setSelectedQuoteId(undefined);
                 setSelectedClientId(undefined);
             }
+            // Fetch recent retainers to populate initialItems
+            searchRetainerInvoices("").then(retainers => {
+                setRecentRetainers(retainers.map(r => ({ id: r.id, label: r.number })));
+            });
         } else if (!checked && !invoice) {
             setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
         }
@@ -398,12 +404,12 @@ export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceN
                     <Combobox
                         name="retainerInvoiceId"
                         label={dict.invoices.associated_retainer}
-                        initialItems={[]} // Initial items could be empty or recent retainers if we fetch them. searchAction will handle it.
+                        initialItems={recentRetainers}
                         searchAction={searchRetainerInvoices}
                         onSelect={handleRetainerInvoiceChange}
                         defaultValue={invoice?.retainerInvoiceId || undefined}
                         placeholder={dict.invoices.select_retainer}
-                        minSearchLength={1} // Allow searching with short numbers
+                        minSearchLength={0}
                         valueKey="number"
                         disabled={readOnly}
                         error={retainerError ? dict.invoices.validation.retainer_required : undefined}
