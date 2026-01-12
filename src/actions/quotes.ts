@@ -156,11 +156,8 @@ export async function updateQuoteStatus(id: string, status: string) {
 export async function getQuoteDetails(id: string) {
     const quote = await prisma.quote.findUnique({
         where: { id },
-        select: {
-            id: true,
-            number: true,
-            total: true,
-            currency: true
+        include: {
+            items: true
         }
     });
     return quote;

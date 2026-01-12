@@ -2,6 +2,7 @@
 
 import { createInvoice, updateInvoice } from "@/actions/invoices";
 import { getQuoteDetails } from "@/actions/quotes";
+import { getRetainerDetails, searchRetainerInvoices } from "@/actions/retainers";
 import { searchClients, searchQuotes } from "@/actions/search";
 import Combobox from "@/components/Combobox";
 import styles from "./InvoiceForm.module.css";
@@ -36,13 +37,17 @@ interface InvoiceFormProps {
         recurringInterval: string | null;
         isRetainer: boolean;
         retainerPercentage: number | null;
+        isBalance: boolean;
+        retainerInvoiceId: string | null;
+        retainerDeductionAmount: number | null;
     };
+    retainerInvoiceNumber?: string;
     dict: Dictionary;
     readOnly?: boolean;
     defaultVat: number;
 }
 
-export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, defaultVat }: InvoiceFormProps) {
+export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceNumber, dict, readOnly, defaultVat }: InvoiceFormProps) {
     const isEditing = !!invoice;
     const action = isEditing ? updateInvoice.bind(null, invoice.id) : createInvoice;
 
@@ -57,16 +62,33 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
     );
     const [isRecurring, setIsRecurring] = useState(invoice?.isRecurring || false);
     const [isRetainer, setIsRetainer] = useState(invoice?.isRetainer || false);
+    const [isBalance, setIsBalance] = useState(invoice?.isBalance || false);
     const [retainerPercentage, setRetainerPercentage] = useState(invoice?.retainerPercentage || 30);
     const [selectedQuoteId, setSelectedQuoteId] = useState<string | undefined>(invoice?.quoteId || undefined);
+    const [selectedClientId, setSelectedClientId] = useState<string | undefined>(invoice?.clientId || undefined);
+    const [selectedRetainerId, setSelectedRetainerId] = useState<string | undefined>(invoice?.retainerInvoiceId || undefined);
+    const [retainerDeductionAmount, setRetainerDeductionAmount] = useState<number>(invoice?.retainerDeductionAmount || 0);
+    const [currentRetainerNumber, setCurrentRetainerNumber] = useState<string | undefined>(retainerInvoiceNumber);
 
     const handleQuoteChange = async (val: string | null) => {
         const newQuoteId = val || undefined;
         setSelectedQuoteId(newQuoteId);
-        if (isRetainer && newQuoteId) {
+        if (newQuoteId) {
             const quote = await getQuoteDetails(newQuoteId);
             if (quote) {
-                updateRetainerItem(quote.total, retainerPercentage, quote.number);
+                if (isRetainer) {
+                    updateRetainerItem(quote.total, retainerPercentage, quote.number);
+                } else if (isBalance) {
+                    // Populate items from new quote
+                    setItems(quote.items.map(item => ({
+                        title: (item as any).title || "",
+                        description: item.description,
+                        quantity: item.quantity,
+                        price: item.price,
+                        vat: (item as any).vat || 0,
+                        total: item.total
+                    })));
+                }
             }
         }
     };
@@ -84,15 +106,17 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
     };
 
     const handleRetainerChange = async (checked: boolean) => {
-        setIsRecurring(false); // Mutually exclusive ideally or just visually separate
+        setIsRecurring(false);
+        setIsBalance(false);
         setIsRetainer(checked);
+        setRetainerDeductionAmount(0);
         if (checked && selectedQuoteId) {
             const quote = await getQuoteDetails(selectedQuoteId);
             if (quote) {
                 updateRetainerItem(quote.total, retainerPercentage, quote.number);
             }
         } else if (!checked && !invoice) {
-            // Reset to empty item if unchecking and creating new (not perfect but safe)
+            // Reset to empty item if unchecking and creating new
             setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
         }
     };
@@ -144,18 +168,72 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
         setIsRecurring(checked);
         if (checked) {
             setIsRetainer(false);
+            setIsBalance(false);
+            setRetainerDeductionAmount(0);
             // If we're switching from Retainer mode to Recurring, reset items to a default editable item if we're creating a new invoice,
             // or if the current items look like a generated retainer item (single item, read only context effectively).
             // Simplest safe approach: If creating new, reset. If editing, keep as is (user might want to keep data).
-            if (!invoice && isRetainer) {
+            if (!invoice && (isRetainer || isBalance)) {
                 setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
             }
         }
     };
 
+    const handleBalanceChange = (checked: boolean) => {
+        setIsBalance(checked);
+        setRetainerDeductionAmount(0);
+        setCurrentRetainerNumber(undefined);
+        if (checked) {
+            setIsRetainer(false);
+            setIsRecurring(false);
+            if (!invoice) {
+                setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
+                setSelectedRetainerId(undefined);
+                setSelectedQuoteId(undefined);
+                setSelectedClientId(undefined);
+            }
+        } else if (!checked && !invoice) {
+            setItems([{ title: "", description: "", quantity: 1, price: 0, vat: defaultVat, total: 0 }]);
+        }
+    }
+
+    const handleRetainerInvoiceChange = async (val: string | null) => {
+        const id = val || undefined;
+        setSelectedRetainerId(id);
+
+        if (isBalance && id) {
+            const retainer = await getRetainerDetails(id);
+            if (retainer) {
+                // Auto populate quote and client
+                setSelectedQuoteId(retainer.quoteId || undefined);
+                setSelectedClientId(retainer.clientId);
+
+                // Populate items (Quote items only)
+                const newItems: FormItem[] = retainer.items.map(item => ({
+                    title: (item as any).title || "",
+                    description: item.description,
+                    quantity: item.quantity,
+                    price: item.price,
+                    vat: (item as any).vat || 0,
+                    total: item.total
+                }));
+
+                setItems(newItems);
+
+                // Set deduction amount
+                setRetainerDeductionAmount(retainer.total);
+                setCurrentRetainerNumber(retainer.number);
+            }
+        } else {
+            setRetainerDeductionAmount(0);
+            setCurrentRetainerNumber(undefined);
+        }
+    }
+
     const [saved, setSaved] = useState(false);
     const [clientError, setClientError] = useState(false);
     const [quoteError, setQuoteError] = useState(false);
+    const [retainerError, setRetainerError] = useState(false);
 
     const handleSubmit = async (formData: FormData) => {
         let hasError = false;
@@ -173,6 +251,12 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
             setTimeout(() => setQuoteError(false), 3000);
         }
 
+        if (isBalance && !formData.get("retainerInvoiceId")) {
+            setRetainerError(true);
+            hasError = true;
+            setTimeout(() => setRetainerError(false), 3000);
+        }
+
         if (hasError) return;
 
         try {
@@ -188,40 +272,44 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
         }
     };
 
-    const total = items.reduce((sum, item) => sum + item.total, 0);
+    const itemsTotal = items.reduce((sum, item) => sum + item.total, 0);
+    const total = itemsTotal - retainerDeductionAmount;
 
     return (
         <form action={handleSubmit} className={styles.form}>
+            <input type="hidden" name="retainerDeductionAmount" value={retainerDeductionAmount} />
             <div className={styles.row}>
                 <div className={styles.group}>
 
                     <Combobox
+                        key={selectedClientId}
                         name="clientId"
                         label={dict.invoices.client}
                         initialItems={clients.map(c => ({ id: c.id, label: c.name }))}
                         searchAction={searchClients}
-                        defaultValue={invoice?.clientId}
+                        defaultValue={selectedClientId}
                         placeholder={dict.invoices.select_client}
                         minSearchLength={2}
                         valueKey="name"
-                        disabled={readOnly}
+                        disabled={readOnly || isBalance}
                         error={clientError ? dict.invoices.validation.required_field : undefined}
                     />
                 </div>
                 <div className={styles.group}>
 
                     <Combobox
+                        key={selectedQuoteId}
                         name="quoteId"
                         label={dict.common.quotes}
                         initialItems={quotes.map(q => ({ id: q.id, label: q.number }))}
                         searchAction={searchQuotes}
-                        defaultValue={invoice?.quoteId || undefined}
+                        defaultValue={selectedQuoteId}
                         onSelect={handleQuoteChange}
                         placeholder="-"
                         minSearchLength={4}
                         valueKey="number"
-                        allowClear={!isRetainer}
-                        disabled={readOnly}
+                        allowClear={!isRetainer && !isBalance}
+                        disabled={readOnly || isBalance}
                         error={quoteError ? dict.invoices.validation.quote_required : undefined}
                     />
                 </div>
@@ -287,6 +375,39 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                     {dict.invoices.retainer_invoice}
                 </label>
             </div>
+
+            <div className={styles.group} style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                    type="checkbox"
+                    id="isBalance"
+                    name="isBalance"
+                    checked={isBalance}
+                    onChange={(e) => handleBalanceChange(e.target.checked)}
+                    style={{ width: 'auto' }}
+                    disabled={readOnly}
+                />
+                <label htmlFor="isBalance" className={styles.label} style={{ marginBottom: 0 }}>
+                    {dict.invoices.balance_invoice}
+                </label>
+            </div>
+
+            {isBalance && (
+                <div className={styles.group}>
+                    <Combobox
+                        name="retainerInvoiceId"
+                        label={dict.invoices.associated_retainer}
+                        initialItems={[]} // Initial items could be empty or recent retainers if we fetch them. searchAction will handle it.
+                        searchAction={searchRetainerInvoices}
+                        onSelect={handleRetainerInvoiceChange}
+                        defaultValue={invoice?.retainerInvoiceId || undefined}
+                        placeholder={dict.invoices.select_retainer}
+                        minSearchLength={1} // Allow searching with short numbers
+                        valueKey="number"
+                        disabled={readOnly}
+                        error={retainerError ? dict.invoices.validation.retainer_required : undefined}
+                    />
+                </div>
+            )}
 
             {isRetainer && (
                 <div className={styles.group}>
@@ -354,7 +475,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                                 className={styles.input}
 
                                 required
-                                disabled={readOnly || isRetainer}
+                                disabled={readOnly || isRetainer || isBalance}
                             />
                             <SmartTextarea
                                 placeholder={dict.quotes.form.description_placeholder}
@@ -364,7 +485,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
 
                                 style={{ minHeight: '80px', resize: 'vertical' }}
 
-                                disabled={readOnly || isRetainer}
+                                disabled={readOnly || isRetainer || isBalance}
                             />
                         </div>
                         <input
@@ -375,7 +496,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                             onChange={(e) => updateItem(index, "quantity", e.target.value)}
                             className={styles.input}
                             style={{ textAlign: 'right' }}
-                            disabled={readOnly || isRetainer}
+                            disabled={readOnly || isRetainer || isBalance}
                         />
                         <input
                             type="number"
@@ -386,7 +507,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                             onChange={(e) => updateItem(index, "price", e.target.value)}
                             className={styles.input}
                             style={{ textAlign: 'right' }}
-                            disabled={readOnly || isRetainer}
+                            disabled={readOnly || isRetainer || isBalance}
                         />
 
                         {/* VAT input hidden but keeping value for form submission if needed, though we set it in updateItem now */}
@@ -394,7 +515,7 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                         <div style={{ fontWeight: 'bold', textAlign: 'right', paddingTop: '0.75rem' }}>
                             {item.total.toFixed(2)}
                         </div>
-                        {!readOnly && !isRetainer && (
+                        {!readOnly && !isRetainer && !isBalance && (
                             <button type="button" onClick={() => removeItem(index)} className={styles.deleteButton} aria-label="Remove item" style={{ marginTop: '0.5rem' }}>
                                 ×
                             </button>
@@ -402,15 +523,32 @@ export default function InvoiceForm({ clients, quotes, invoice, dict, readOnly, 
                     </div>
                 ))}
 
-                {!readOnly && !isRetainer && (
+                {!readOnly && !isRetainer && !isBalance && (
                     <button type="button" onClick={addItem} className={styles.secondaryButton} style={{ marginTop: '1rem' }}>
                         {dict.quotes.form.add_item}
                     </button>
                 )}
 
+                {isBalance && retainerDeductionAmount > 0 && (
+                    <div className={styles.itemRow} style={{ borderTop: '1px solid #e5e7eb', marginTop: '1rem', paddingTop: '1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', gridColumn: '1 / span 1' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#ef4444', fontWeight: 'bold' }}>
+                                {dict.invoices.amount_paid_retainer.replace("{number}", currentRetainerNumber || "")}
+                            </span>
+                        </div>
+                        {/* Empty columns for Qty and Price */}
+                        <div></div>
+                        <div></div>
+
+                        <div style={{ fontWeight: 'bold', textAlign: 'right', color: '#ef4444' }}>
+                            - {retainerDeductionAmount.toFixed(2)}
+                        </div>
+                    </div>
+                )}
+
                 <div className={styles.totalRow}>
                     <span>{defaultVat > 0 ? dict.common.total_ttc : dict.common.total_ht}:</span>
-                    <span>{items.reduce((sum, item) => sum + item.total, 0).toFixed(2)}</span>
+                    <span>{total.toFixed(2)}</span>
                 </div>
             </div>
 

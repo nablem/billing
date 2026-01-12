@@ -22,7 +22,14 @@ export interface InvoiceInput {
     recurringInterval?: string;
     isRetainer?: boolean;
     retainerPercentage?: number;
+    isBalance?: boolean;
+    retainerInvoiceId?: string;
+    retainerDeductionAmount?: number;
 }
+
+// ... parseItems function ... (unchanged, but replace_file_content might need context. I'll target the interface and createInvoice body)
+
+// Actually I will target from interface definition down to createInvoice body
 
 // Helper to parse items from FormData
 function parseItems(formData: FormData): InvoiceItemInput[] {
@@ -65,8 +72,11 @@ export async function createInvoice(formData: FormData) {
     const recurringInterval = formData.get("recurringInterval") as string;
     const isRetainer = formData.get("isRetainer") === "on";
     const retainerPercentage = parseFloat(formData.get("retainerPercentage") as string || "0");
+    const isBalance = formData.get("isBalance") === "on";
+    const retainerInvoiceId = formData.get("retainerInvoiceId") as string || undefined;
+    const retainerDeductionAmount = parseFloat(formData.get("retainerDeductionAmount") as string || "0");
 
-    console.log("createInvoice args:", { clientId, quoteId, isRetainer, retainerPercentage });
+    console.log("createInvoice args:", { clientId, quoteId, isRetainer, retainerPercentage, isBalance, retainerInvoiceId, retainerDeductionAmount });
 
     if (!clientId) {
         throw new Error("Client ID is required");
@@ -74,6 +84,10 @@ export async function createInvoice(formData: FormData) {
 
     if (isRetainer && !quoteId) {
         throw new Error("Quote is required for retainer invoices");
+    }
+
+    if (isBalance && !retainerInvoiceId) {
+        throw new Error("Retainer invoice is required for balance invoices");
     }
 
     const items = parseItems(formData);
@@ -94,6 +108,9 @@ export async function createInvoice(formData: FormData) {
             recurringInterval: isRecurring ? recurringInterval : undefined,
             isRetainer,
             retainerPercentage: isRetainer ? retainerPercentage : undefined,
+            isBalance,
+            retainerInvoiceId: isBalance ? retainerInvoiceId : undefined,
+            retainerDeductionAmount: isBalance ? retainerDeductionAmount : undefined,
             items: {
                 create: items.map((item) => ({
                     title: item.title,
@@ -122,6 +139,9 @@ export async function updateInvoice(id: string, formData: FormData) {
     const recurringInterval = formData.get("recurringInterval") as string;
     const isRetainer = formData.get("isRetainer") === "on";
     const retainerPercentage = parseFloat(formData.get("retainerPercentage") as string || "0");
+    const isBalance = formData.get("isBalance") === "on";
+    const retainerInvoiceId = formData.get("retainerInvoiceId") as string || null;
+    const retainerDeductionAmount = parseFloat(formData.get("retainerDeductionAmount") as string || "0");
 
     const items = parseItems(formData);
     const total = items.reduce((acc, item) => acc + (item.quantity * item.price * (1 + (item.vat || 0) / 100)), 0);
@@ -144,6 +164,9 @@ export async function updateInvoice(id: string, formData: FormData) {
                 recurringInterval: isRecurring ? recurringInterval : undefined,
                 isRetainer,
                 retainerPercentage: isRetainer ? retainerPercentage : undefined,
+                isBalance,
+                retainerInvoiceId: isBalance ? retainerInvoiceId : undefined,
+                retainerDeductionAmount: isBalance ? retainerDeductionAmount : undefined,
                 total,
                 items: {
                     create: items.map((item) => ({

@@ -18,7 +18,7 @@ export default async function EditInvoicePage({ params }: PageProps) {
 
     const invoice = await prisma.invoice.findUnique({
         where: { id },
-        include: { items: true, client: true },
+        include: { items: true, client: true, retainerInvoice: true },
     });
 
     const clients = await prisma.client.findMany({
@@ -96,6 +96,7 @@ export default async function EditInvoicePage({ params }: PageProps) {
                 dict={dict}
                 readOnly={isLocked}
                 defaultVat={organization?.defaultVat || 0}
+                retainerInvoiceNumber={invoice.retainerInvoice?.number}
             />
         </div>
     );

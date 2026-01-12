@@ -81,6 +81,13 @@ model Invoice {
   isRetainer       Boolean    @default(false)
   retainerPercentage Float?
 
+  // Balance logic
+  isBalance        Boolean    @default(false)
+  retainerInvoiceId String?
+  retainerInvoice   Invoice?   @relation("RetainerToBalance", fields: [retainerInvoiceId], references: [id])
+  balanceInvoices   Invoice[]  @relation("RetainerToBalance")
+  retainerDeductionAmount Float? // Amount deducted from the total (stored as positive, subtracted during calc)
+
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 }

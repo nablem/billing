@@ -115,9 +115,14 @@ export const fr = {
         retainer_invoice: "Facture d'Acompte",
         retainer_percentage: "Pourcentage de l'acompte (%)",
         retainer_associated_article_title: "Acompte sur devis {number}",
+        balance_invoice: "Facture de Solde",
+        associated_retainer: "Facture d'Acompte Associée",
+        select_retainer: "Sélectionner l'acompte",
+        amount_paid_retainer: "Montant déjà payé, facture d'acompte {number}",
         validation: {
             required_field: "Veuillez remplir ce champ",
-            quote_required: "Veuillez sélectionner un devis"
+            quote_required: "Veuillez sélectionner un devis",
+            retainer_required: "Veuillez sélectionner un acompte"
         },
         mark_as_sent: "Marquer comme Envoyée",
         mark_as_paid: "Marquer comme Payée",
@@ -283,9 +288,14 @@ export const en: Dictionary = {
         retainer_invoice: "Retainer Invoice",
         retainer_percentage: "Retainer Percentage (%)",
         retainer_associated_article_title: "Retainer for quote {number}",
+        balance_invoice: "Balance Invoice",
+        associated_retainer: "Associated Retainer Invoice",
+        select_retainer: "Select Retainer",
+        amount_paid_retainer: "Amount already paid, retainer invoice {number}",
         validation: {
             required_field: "Please fill this field",
-            quote_required: "Please select a quote"
+            quote_required: "Please select a quote",
+            retainer_required: "Please select a retainer invoice"
         },
         status: {
             DRAFT: "Draft",
