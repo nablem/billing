@@ -89,21 +89,45 @@ export async function createInvoice(formData: FormData) {
             const organization = await tx.organization.findFirst();
 
             let number = `INV-${Date.now()}`; // Fallback
+            let currentSequence = 1;
 
             if (organization) {
-                const { invoicePrefix, invoiceIncludeYear, invoiceIncludeMonth, invoiceSequence, invoiceDigits } = organization;
+                const { invoicePrefix, invoiceIncludePrefix, invoiceIncludeYear, invoiceIncludeMonth, invoiceSequence, invoiceDigits } = organization;
+
+                if (invoiceIncludeYear || invoiceIncludeMonth) {
+                    const now = new Date();
+                    const startOfPeriod = new Date(now.getFullYear(), organization.invoiceIncludeMonth ? now.getMonth() : 0, 1);
+                    const endOfPeriod = new Date(now.getFullYear(), organization.invoiceIncludeMonth ? now.getMonth() + 1 : 12, 0);
+
+                    const invoicesInPeriod = await tx.invoice.count({
+                        where: {
+                            createdAt: {
+                                gte: startOfPeriod,
+                                lt: endOfPeriod,
+                            },
+                        },
+                    });
+
+                    if (invoicesInPeriod === 0) {
+                        currentSequence = 1;
+                    } else {
+                        currentSequence = invoiceSequence;
+                    }
+                } else {
+                    currentSequence = invoiceSequence;
+                }
 
                 const yearPart = invoiceIncludeYear ? new Date().getFullYear().toString() : "";
                 const monthPart = invoiceIncludeMonth ? (new Date().getMonth() + 1).toString().padStart(2, '0') : "";
-                const sequencePart = invoiceSequence.toString().padStart(invoiceDigits, '0');
-
-                number = `${invoicePrefix}${yearPart}${monthPart}${sequencePart}`;
-
-                // Increment sequence
+                const sequencePart = currentSequence.toString().padStart(invoiceDigits, '0');
+                
+                number = `${invoiceIncludePrefix ? invoicePrefix : ''}${yearPart}${monthPart}${sequencePart}`;
+                
                 await tx.organization.update({
                     where: { id: organization.id },
-                    data: { invoiceSequence: { increment: 1 } }
+                    data: { invoiceSequence: currentSequence + 1 },
                 });
+
             }
 
             await tx.invoice.create({
@@ -238,19 +262,43 @@ export async function createInvoiceFromQuote(quoteId: string) {
             const organization = await tx.organization.findFirst();
 
             let number = `INV-${Date.now()}`;
+            let currentSequence = 1;
 
             if (organization) {
-                const { invoicePrefix, invoiceIncludeYear, invoiceIncludeMonth, invoiceSequence, invoiceDigits } = organization;
+                const { invoicePrefix, invoiceIncludePrefix, invoiceIncludeYear, invoiceIncludeMonth, invoiceSequence, invoiceDigits } = organization;
+
+                if (invoiceIncludeYear || invoiceIncludeMonth) {
+                    const now = new Date();
+                    const startOfPeriod = new Date(now.getFullYear(), organization.invoiceIncludeMonth ? now.getMonth() : 0, 1);
+                    const endOfPeriod = new Date(now.getFullYear(), organization.invoiceIncludeMonth ? now.getMonth() + 1 : 12, 0);
+
+                    const invoicesInPeriod = await tx.invoice.count({
+                        where: {
+                            createdAt: {
+                                gte: startOfPeriod,
+                                lt: endOfPeriod,
+                            },
+                        },
+                    });
+
+                    if (invoicesInPeriod === 0) {
+                        currentSequence = 1;
+                    } else {
+                        currentSequence = invoiceSequence;
+                    }
+                } else {
+                    currentSequence = invoiceSequence;
+                }
 
                 const yearPart = invoiceIncludeYear ? new Date().getFullYear().toString() : "";
                 const monthPart = invoiceIncludeMonth ? (new Date().getMonth() + 1).toString().padStart(2, '0') : "";
-                const sequencePart = invoiceSequence.toString().padStart(invoiceDigits, '0');
+                const sequencePart = currentSequence.toString().padStart(invoiceDigits, '0');
 
-                number = `${invoicePrefix}${yearPart}${monthPart}${sequencePart}`;
+                number = `${invoiceIncludePrefix ? invoicePrefix : ''}${yearPart}${monthPart}${sequencePart}`;
 
                 await tx.organization.update({
                     where: { id: organization.id },
-                    data: { invoiceSequence: { increment: 1 } }
+                    data: { invoiceSequence: currentSequence + 1 },
                 });
             }
 
