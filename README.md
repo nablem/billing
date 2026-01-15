@@ -43,10 +43,10 @@ Follow these instructions to get the project running on your local machine for d
     DATABASE_URL="file:./prisma/dev.db"
     ```
 
-4.  **Run Database Migrations**:
-    Apply the database schema using Prisma Migrate.
+4.  **Sync Database Schema**:
+    Push the database schema directly to the database. This project uses a schema-first workflow and avoids using migration files for simplicity during development.
     ```bash
-    npx prisma migrate dev
+    npx prisma db push
     ```
 
 5.  **Run the Development Server**:
@@ -75,9 +75,9 @@ Follow these instructions to get the project running on your local machine for d
     DATABASE_URL="file:./prisma/dev.db"
     ```
 
-4.  **Run Database Migrations**:
+4.  **Sync Database Schema**:
     ```bash
-    npx prisma migrate deploy
+    npx prisma db push
     ```
 
 5.  **Build and Start the Application**:
