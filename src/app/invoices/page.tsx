@@ -91,7 +91,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                                         invoice.isBalance ? dict.invoices.type_balance :
                                             '-'}
                             </td>
-                            <td style={{ textAlign: "right" }}>{invoice.total.toFixed(2)} {invoice.currency}</td>
+                            <td style={{ textAlign: "right" }}>{(invoice.total - (invoice.retainerDeductionAmount || 0)).toFixed(2)} {invoice.currency}</td>
                             <td><span className={`${styles.status} ${styles['status_' + invoice.status]}`}>
                                 {(dict.invoices.status as any)[invoice.status] || invoice.status}
                             </span></td>
