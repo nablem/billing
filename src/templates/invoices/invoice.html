@@ -200,8 +200,8 @@
             <tr>
                 <th width="50%">Description</th>
                 <th width="15%" class="col-right">Quantité</th>
-                <th width="20%" class="col-right">Prix Unitaire</th>
-                <th width="15%" class="col-right">Total</th>
+                <th width="20%" class="col-right">Prix HT</th>
+                <th width="15%" class="col-right">Total HT</th>
             </tr>
         </thead>
         <tbody>
@@ -225,8 +225,8 @@
                     <div class="item-description">{{this.description}}</div>
                 </td>
                 <td class="col-right">{{quantity}}</td>
-                <td class="col-right">{{price}}</td>
-                <td class="col-right">{{total}}</td>
+                <td class="col-right">{{price}}€</td>
+                <td class="col-right">{{total}}€</td>
             </tr>
             {{/each}}
 
@@ -237,9 +237,9 @@
                     <div class="item-title">Montant déjà payé</div>
                     <div class="item-description">Facture d'acompte {{retainerInvoice.number}}</div>
                 </td>
-                <td class="col-right">1</td>
-                <td class="col-right">-{{retainerDeductionAmount}}</td>
-                <td class="col-right">-{{retainerDeductionAmount}}</td>
+                <td class="col-right"></td>
+                <td class="col-right"></td>
+                <td class="col-right">-{{retainerDeductionAmount}}€</td>
             </tr>
             {{/if}}
             {{/if}}
@@ -249,8 +249,8 @@
     <div class="totals">
         <table class="totals-table">
             <tr class="grand-total">
-                <td class="total-label">Total {{currency}}</td>
-                <td class="total-value">{{total}}</td>
+                <td class="total-label">Total HT</td>
+                <td class="total-value">{{total}}€</td>
             </tr>
         </table>
     </div>

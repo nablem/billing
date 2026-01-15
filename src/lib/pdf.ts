@@ -6,7 +6,7 @@ const GOTENBERG_URL = process.env.GOTENBERG_URL || "http://localhost:3001";
 
 export async function generatePdf(templateName: string, data: any): Promise<Buffer> {
     // 1. Read template
-    const templatePath = path.join(process.cwd(), "src", "templates", `${templateName}.html`);
+    const templatePath = path.join(process.cwd(), "src", "templates", `${templateName}s`, `${templateName}.html`);
     const templateContent = await fs.readFile(templatePath, "utf-8");
 
     // 2. Compile template
