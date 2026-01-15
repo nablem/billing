@@ -182,7 +182,11 @@ export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceN
         }
     };
 
-    const [recentRetainers, setRecentRetainers] = useState<{ id: string; label: string }[]>([]);
+    const [recentRetainers, setRecentRetainers] = useState<{ id: string; label: string }[]>(
+        invoice?.retainerInvoiceId && retainerInvoiceNumber
+            ? [{ id: invoice.retainerInvoiceId, label: retainerInvoiceNumber }]
+            : []
+    );
 
     const handleBalanceChange = async (checked: boolean) => {
         setIsBalance(checked);
