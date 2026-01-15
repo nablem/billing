@@ -38,7 +38,12 @@ export async function GET(req: NextRequest, { params }: Props) {
     } else {
         const invoice = await prisma.invoice.findUnique({
             where: { id },
-            include: { client: true, items: true },
+            include: {
+                client: true,
+                items: true,
+                quote: true,
+                retainerInvoice: true
+            },
         });
         if (!invoice) return new NextResponse("Invoice not found", { status: 404 });
 
@@ -46,7 +51,10 @@ export async function GET(req: NextRequest, { params }: Props) {
             ...invoice,
             date: new Date(invoice.date).toLocaleDateString(),
             dueDate: invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : null,
-            total: invoice.total.toFixed(2),
+            total: (invoice.isBalance && invoice.retainerDeductionAmount
+                ? (invoice.total - invoice.retainerDeductionAmount)
+                : invoice.total
+            ).toFixed(2),
             items: invoice.items.map(item => ({ ...item, total: item.total.toFixed(2), price: item.price.toFixed(2) })),
         };
         filename = `${invoice.number}.pdf`;
