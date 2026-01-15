@@ -16,6 +16,7 @@ These variables are available at the root level of your template.
 | `currency` | String | Currency code (e.g., "EUR"). |
 | `notes` | String | Optional notes/comments added to the document. |
 | `client` | Object | The client details object (see below). |
+| `organization` | Object | The organization details object (see below). |
 | `items` | Array | List of items/products (see below). |
 
 ## Invoice-Specific Variables
@@ -46,6 +47,23 @@ These variables are populated if the invoice is a **Balance Invoice** (`isBalanc
 | `retainerDeductionAmount` | Number | The amount deducted from the total (the paid retainer amount). |
 | `retainerInvoiceId` | String | The ID of the linked retainer invoice. |
 | `retainerInvoice` | Object | The linked Retainer Invoice object. Accessible via `{{retainerInvoice.number}}`. |
+
+## Organization Object (`organization`)
+
+Access properties via `organization.propertyName`.
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | String | Organization name. |
+| `address` | String | Street address. |
+| `city` | String | City. |
+| `zipCode` | String | Postal/Zip code. |
+| `country` | String | Country. |
+| `companyId` | String | Registration ID (SIRET/SIREN). |
+| `vatNumber` | String | VAT identification number. |
+| `email` | String | Contact email. |
+| `phone` | String | Phone number. |
+| `website` | String | Website URL. |
 
 ## Client Object (`client`)
 

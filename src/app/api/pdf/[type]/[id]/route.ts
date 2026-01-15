@@ -47,6 +47,8 @@ export async function GET(req: NextRequest, { params }: Props) {
         });
         if (!invoice) return new NextResponse("Invoice not found", { status: 404 });
 
+        const organization = await prisma.organization.findFirst();
+
         data = {
             ...invoice,
             date: new Date(invoice.date).toLocaleDateString(),
@@ -56,6 +58,7 @@ export async function GET(req: NextRequest, { params }: Props) {
                 : invoice.total
             ).toFixed(2),
             items: invoice.items.map(item => ({ ...item, total: item.total.toFixed(2), price: item.price.toFixed(2) })),
+            organization,
         };
         filename = `${invoice.number}.pdf`;
     }

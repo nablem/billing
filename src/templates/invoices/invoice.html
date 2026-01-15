@@ -29,10 +29,18 @@
             color: #000;
             text-transform: uppercase;
             letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .org-details {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.6;
         }
 
         .meta-grid {
             text-align: right;
+            min-width: 200px;
         }
 
         .meta-item {
@@ -48,8 +56,17 @@
             font-weight: 600;
         }
 
-        .client-section {
+        .address-section {
+            display: flex;
+            justify-content: flex-end;
+            /* Client details right aligned */
             margin-bottom: 60px;
+        }
+
+        .client-box {
+            text-align: right;
+            /* Right align text inside the box */
+            max-width: 300px;
         }
 
         .client-label {
@@ -143,12 +160,43 @@
             margin-top: 8px;
         }
 
-        .notes {
+        .notes-section {
             margin-top: 60px;
-            padding-top: 20px;
             border-top: 1px solid #e5e5e5;
-            color: #666;
+            padding-top: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            /* Same color as rest */
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
             font-size: 13px;
+            color: #444;
+            /* Standard text color */
+            white-space: pre-wrap;
+        }
+
+        .terms-section {
+            margin-top: 30px;
+        }
+
+        .terms-title {
+            /* Reuse section title style */
+            @extend .section-title;
+        }
+
+        .terms-content {
+            font-size: 12px;
+            color: #888;
+            /* Slightly greyish */
+            line-height: 1.5;
         }
 
         .footer {
@@ -156,13 +204,35 @@
             text-align: center;
             color: #999;
             font-size: 12px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
         }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <div class="logo">FreelanceHub</div>
+        <div>
+            <!-- Organization Details (Left Aligned) -->
+            {{#if organization.name}}
+            <div class="logo">{{organization.name}}</div>
+            {{else}}
+            <div class="logo">FreelanceHub</div>
+            {{/if}}
+
+            <div class="org-details">
+                {{#if organization.address}}<div>{{organization.address}}</div>{{/if}}
+                {{#if organization.city}}
+                <div>{{organization.city}}{{#if organization.zipCode}}, {{organization.zipCode}}{{/if}}</div>
+                {{/if}}
+                {{#if organization.country}}<div>{{organization.country}}</div>{{/if}}
+                {{#if organization.vatNumber}}<div>TVA: {{organization.vatNumber}}</div>{{/if}}
+                {{#if organization.companyId}}<div>SIRET: {{organization.companyId}}</div>{{/if}}
+                {{#if organization.email}}<div>Email: {{organization.email}}</div>{{/if}}
+                {{#if organization.website}}<div>Web: {{organization.website}}</div>{{/if}}
+            </div>
+        </div>
+
         <div class="meta-grid">
             <div class="meta-item">
                 <span class="meta-label">Facture N°</span>
@@ -181,17 +251,19 @@
         </div>
     </div>
 
-    <div class="client-section">
-        <div class="client-label">Facturé à</div>
-        <div class="client-name">{{client.name}}</div>
-        <div class="client-details">
-            {{#if client.address}}<div>{{client.address}}</div>{{/if}}
-            {{#if client.city}}
-            <div>{{client.city}}{{#if client.zipCode}}, {{client.zipCode}}{{/if}}</div>
-            {{/if}}
-            {{#if client.country}}<div>{{client.country}}</div>{{/if}}
-            {{#if client.vatNumber}}<div>TVA: {{client.vatNumber}}</div>{{/if}}
-            {{#if client.companyId}}<div>SIRET: {{client.companyId}}</div>{{/if}}
+    <div class="address-section">
+        <div class="client-box">
+            <div class="client-label">Facturé à</div>
+            <div class="client-name">{{client.name}}</div>
+            <div class="client-details">
+                {{#if client.address}}<div>{{client.address}}</div>{{/if}}
+                {{#if client.city}}
+                <div>{{client.city}}{{#if client.zipCode}}, {{client.zipCode}}{{/if}}</div>
+                {{/if}}
+                {{#if client.country}}<div>{{client.country}}</div>{{/if}}
+                {{#if client.vatNumber}}<div>TVA: {{client.vatNumber}}</div>{{/if}}
+                {{#if client.companyId}}<div>SIRET: {{client.companyId}}</div>{{/if}}
+            </div>
         </div>
     </div>
 
@@ -213,8 +285,8 @@
                     <div class="item-description">Acompte de {{retainerPercentage}}%</div>
                 </td>
                 <td class="col-right">1</td>
-                <td class="col-right">{{total}}</td>
-                <td class="col-right">{{total}}</td>
+                <td class="col-right">{{total}}€</td>
+                <td class="col-right">{{total}}€</td>
             </tr>
             {{else}}
             <!-- Logic for Standard and Balance Invoices -->
@@ -256,10 +328,20 @@
     </div>
 
     {{#if notes}}
-    <div class="notes">
-        {{notes}}
+    <div class="notes-section">
+        <div class="section-title">Remarques</div>
+        <div class="section-content">{{notes}}</div>
     </div>
     {{/if}}
+
+    <!-- Terms & Conditions Section (Static Placeholder or dynamic if supported later) -->
+    <div class="terms-section">
+        <div class="section-title">Termes & Conditions</div>
+        <div class="terms-content">
+            Paiement à réception de facture, sauf mention contraire. En cas de retard de paiement, une pénalité de 3
+            fois le taux d'intérêt légal sera appliquée.
+        </div>
+    </div>
 
     <div class="footer">
         Merci de votre confiance.
