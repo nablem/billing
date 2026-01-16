@@ -53,6 +53,7 @@ export async function GET(req: NextRequest, { params }: Props) {
                 total: formatCurrency(item.total, decimalSeparator),
                 price: formatCurrency(item.price, decimalSeparator)
             })),
+            organization,
         };
         filename = `${quote.number}.pdf`;
     } else {
