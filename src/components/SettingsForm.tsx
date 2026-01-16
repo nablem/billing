@@ -104,6 +104,9 @@ export default function SettingsForm({ organization, dict, defaultLanguage }: Se
                         <label className={styles.label}>{dict.settings.form.vat_number}</label>
                         <input name="vatNumber" defaultValue={organization?.vatNumber} className={styles.input} />
                     </div>
+                </div>
+
+                <div className={styles.row}>
                     <div className={styles.group}>
                         <label className={styles.label}>{dict.settings.form.vat_rate}</label>
                         <input
@@ -113,6 +116,26 @@ export default function SettingsForm({ organization, dict, defaultLanguage }: Se
                             defaultValue={organization?.defaultVat ?? 0}
                             className={styles.input}
                         />
+                    </div>
+                    <div className={styles.group}>
+                        <label className={styles.label}>{dict.settings.form.currency}</label>
+                        <select
+                            name="currency"
+                            defaultValue={organization?.currency || "EUR"}
+                            className={styles.input}
+                        >
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                            <option value="GBP">GBP (£)</option>
+                            <option value="JPY">JPY (¥)</option>
+                            <option value="AUD">AUD ($)</option>
+                            <option value="CAD">CAD ($)</option>
+                            <option value="CHF">CHF (Fr)</option>
+                            <option value="CNY">CNY (¥)</option>
+                            <option value="HKD">HKD ($)</option>
+                            <option value="NZD">NZD ($)</option>
+                            <option value="AED">AED (د.إ)</option>
+                        </select>
                     </div>
                 </div>
 

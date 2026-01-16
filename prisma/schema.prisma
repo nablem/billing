@@ -118,6 +118,7 @@ model Organization {
   website     String?
   logoUrl     String?
   language    String   @default("en") // "en" or "fr"
+  currency    String   @default("EUR")
   defaultVat  Float    @default(0)
   
   // Invoice Numbering Settings

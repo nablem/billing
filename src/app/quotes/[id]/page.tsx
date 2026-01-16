@@ -91,6 +91,7 @@ export default async function EditQuotePage({ params }: PageProps) {
                 convertAction={createInvoiceFromQuote.bind(null, quote.id)}
                 readOnly={isLocked}
                 defaultVat={organization?.defaultVat || 0}
+                currency={quote.currency}
             />
         </div>
     );

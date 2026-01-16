@@ -120,9 +120,9 @@ export async function createInvoice(formData: FormData) {
                 const yearPart = invoiceIncludeYear ? new Date().getFullYear().toString() : "";
                 const monthPart = invoiceIncludeMonth ? (new Date().getMonth() + 1).toString().padStart(2, '0') : "";
                 const sequencePart = currentSequence.toString().padStart(invoiceDigits, '0');
-                
+
                 number = `${invoiceIncludePrefix ? invoicePrefix : ''}${yearPart}${monthPart}${sequencePart}`;
-                
+
                 await tx.organization.update({
                     where: { id: organization.id },
                     data: { invoiceSequence: currentSequence + 1 },
@@ -139,6 +139,7 @@ export async function createInvoice(formData: FormData) {
                     dueDate,
                     notes,
                     total,
+                    currency: organization?.currency || "EUR",
                     isRecurring,
                     recurringInterval: isRecurring ? recurringInterval : undefined,
                     isRetainer,
@@ -311,6 +312,7 @@ export async function createInvoiceFromQuote(quoteId: string) {
                     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days
                     notes: quote.notes,
                     total: quote.total,
+                    currency: quote.currency,
                     items: {
                         create: quote.items.map(item => ({
                             title: (item as any).title || null,

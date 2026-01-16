@@ -34,9 +34,10 @@ interface QuoteFormProps {
     convertAction?: any;
     readOnly?: boolean;
     defaultVat: number;
+    currency?: string;
 }
 
-export default function QuoteForm({ clients, quote, dict, convertAction, readOnly, defaultVat }: QuoteFormProps) {
+export default function QuoteForm({ clients, quote, dict, convertAction, readOnly, defaultVat, currency = "EUR" }: QuoteFormProps) {
     const isEditing = !!quote;
     const action = isEditing ? updateQuote.bind(null, quote.id) : createQuote;
 
@@ -215,7 +216,7 @@ export default function QuoteForm({ clients, quote, dict, convertAction, readOnl
 
                 <div className={styles.totalRow}>
                     <span>{defaultVat > 0 ? dict.common.total_ttc : dict.common.total_ht}:</span>
-                    <span>{items.reduce((sum, item) => sum + item.total, 0).toFixed(2)}</span>
+                    <span>{items.reduce((sum, item) => sum + item.total, 0).toFixed(2)} {currency}</span>
                 </div>
             </div>
 

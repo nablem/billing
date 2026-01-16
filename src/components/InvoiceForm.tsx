@@ -46,9 +46,10 @@ interface InvoiceFormProps {
     readOnly?: boolean;
     defaultVat: number;
     title?: string;
+    currency?: string;
 }
 
-export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceNumber, dict, readOnly, defaultVat, title }: InvoiceFormProps) {
+export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceNumber, dict, readOnly, defaultVat, title, currency = "EUR" }: InvoiceFormProps) {
     const isEditing = !!invoice;
     const action = isEditing ? updateInvoice.bind(null, invoice.id) : createInvoice;
 
@@ -576,7 +577,7 @@ export default function InvoiceForm({ clients, quotes, invoice, retainerInvoiceN
 
                 <div className={styles.totalRow}>
                     <span>{defaultVat > 0 ? dict.common.total_ttc : dict.common.total_ht}:</span>
-                    <span>{total.toFixed(2)}</span>
+                    <span>{total.toFixed(2)} {currency}</span>
                 </div>
             </div>
 

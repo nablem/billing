@@ -97,6 +97,7 @@ export default async function EditInvoicePage({ params }: PageProps) {
                 readOnly={isLocked}
                 defaultVat={organization?.defaultVat || 0}
                 retainerInvoiceNumber={invoice.retainerInvoice?.number}
+                currency={invoice.currency}
             />
         </div>
     );

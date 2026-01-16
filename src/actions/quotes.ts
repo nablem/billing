@@ -82,6 +82,8 @@ export async function createQuote(formData: FormData) {
 
             const number = `${prefix}${nextSequence}`;
 
+            const organization = await tx.organization.findFirst();
+
             return await tx.quote.create({
                 data: {
                     number,
@@ -90,6 +92,7 @@ export async function createQuote(formData: FormData) {
                     dueDate,
                     notes,
                     total,
+                    currency: organization?.currency || "EUR",
                     items: {
                         create: items.map((item) => ({
                             title: item.title,
