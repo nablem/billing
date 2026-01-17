@@ -4,6 +4,7 @@ import { updateOrganization, deleteTestData } from "@/actions/settings";
 import { Dictionary } from "@/lib/dictionaries";
 import styles from "./SettingsForm.module.css";
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 interface SettingsFormProps {
     organization: any;
@@ -18,6 +19,7 @@ interface SettingsFormProps {
 }
 
 export default function SettingsForm({ organization, dict, defaultLanguage, availableTemplates }: SettingsFormProps) {
+    const router = useRouter();
     const [previewUrl, setPreviewUrl] = useState<string | null>(organization?.logoUrl || null);
     const [logoFile, setLogoFile] = useState<Blob | null>(null);
 
@@ -87,6 +89,7 @@ export default function SettingsForm({ organization, dict, defaultLanguage, avai
             formData.set("logo", logoFile, "logo.png");
         }
         await updateOrganization(formData);
+        router.refresh();
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
@@ -238,7 +241,12 @@ export default function SettingsForm({ organization, dict, defaultLanguage, avai
                     <div className={styles.row}>
                         <div className={styles.group}>
                             <label className={styles.label}>{dict.settings.form.templates.invoice_pdf}</label>
-                            <select name="invoiceTemplate" defaultValue={organization?.invoiceTemplate || "invoice"} className={styles.input}>
+                            <select
+                                key={`invoice-${organization?.invoiceTemplate}`}
+                                name="invoiceTemplate"
+                                defaultValue={organization?.invoiceTemplate || "invoice"}
+                                className={styles.input}
+                            >
                                 {availableTemplates.invoice.map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
@@ -246,7 +254,12 @@ export default function SettingsForm({ organization, dict, defaultLanguage, avai
                         </div>
                         <div className={styles.group}>
                             <label className={styles.label}>{dict.settings.form.templates.quote_pdf}</label>
-                            <select name="quoteTemplate" defaultValue={organization?.quoteTemplate || "quote"} className={styles.input}>
+                            <select
+                                key={`quote-${organization?.quoteTemplate}`}
+                                name="quoteTemplate"
+                                defaultValue={organization?.quoteTemplate || "quote"}
+                                className={styles.input}
+                            >
                                 {availableTemplates.quote.map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
@@ -256,7 +269,12 @@ export default function SettingsForm({ organization, dict, defaultLanguage, avai
                     <div className={styles.row}>
                         <div className={styles.group}>
                             <label className={styles.label}>{dict.settings.form.templates.invoice_email}</label>
-                            <select name="invoiceEmailTemplate" defaultValue={organization?.invoiceEmailTemplate || "standard"} className={styles.input}>
+                            <select
+                                key={`email-invoice-${organization?.invoiceEmailTemplate}`}
+                                name="invoiceEmailTemplate"
+                                defaultValue={organization?.invoiceEmailTemplate || "standard"}
+                                className={styles.input}
+                            >
                                 {availableTemplates.emailInvoice.map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
@@ -264,7 +282,12 @@ export default function SettingsForm({ organization, dict, defaultLanguage, avai
                         </div>
                         <div className={styles.group}>
                             <label className={styles.label}>{dict.settings.form.templates.quote_email}</label>
-                            <select name="quoteEmailTemplate" defaultValue={organization?.quoteEmailTemplate || "standard"} className={styles.input}>
+                            <select
+                                key={`email-quote-${organization?.quoteEmailTemplate}`}
+                                name="quoteEmailTemplate"
+                                defaultValue={organization?.quoteEmailTemplate || "standard"}
+                                className={styles.input}
+                            >
                                 {availableTemplates.emailQuote.map(t => (
                                     <option key={t} value={t}>{t}</option>
                                 ))}
